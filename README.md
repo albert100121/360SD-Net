@@ -20,7 +20,7 @@ How to Use
 >> cd 360SD-Net
 >> mkdir output
 >> cd conda_env
->> conda create 360SD-Net python=2.7
+>> conda create --name 360SD-Net python=2.7
 >> conda activate 360SD-Net
 >> conda install --file requirement.txt
 
@@ -50,7 +50,7 @@ How to Use
                        |--disp_up/
 # SF3D Dataset
 ./data/
-     |--MP3D/
+     |--SF3D/
                  |--train/
                        |--image_up/
                        |--image_down/
@@ -76,16 +76,16 @@ How to Use
 * Testing prodedure:
 ```
 # For MP3D Dataset
->> python testing.py --datapath data/MP3D/test/ --loadmodel checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/MP3D
+>> python testing.py --datapath data/MP3D/test/ --checkpoint checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/MP3D
 
 # For SF3D Dataset
->> python testing.py --datapath data/SF3D/test/ --loadmodel checkpoints/SF3D_checkpoint/checkpoint.tar --outfile output/SF3D
+>> python testing.py --datapath data/SF3D/test/ --checkpoint checkpoints/SF3D_checkpoint/checkpoint.tar --outfile output/SF3D
 
 # For Real World Data
->> python testing.py --datapath data/Realworld/test/ --loadmodel checkpoints/Gray_Realworld_checkpoint/checkpoint.tar --gray --outfile output/Realworld
+>> python testing.py --datapath data/realworld/ --checkpoint checkpoints/Gray_Realworld_checkpoint/checkpoint.tar --gray --outfile output/realworld
 
 # For small inference
->> python testing.py --datapath data/inference/ --loadmodel checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/small_inference
+>> python testing.py --datapath data/inference/ --checkpoint checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/small_inference
 ```
 * Disparity to Depth:
 ```
@@ -99,16 +99,16 @@ Notes
 
 Synthetic Results
 ---
-- Depth / Error Map
+* Depth / Error Map
 <img src="img/qualitative_depth_error.png" width="600">
-- Projected PCL
+* Projected PCL
 <img src="img/qualitative_pcl.png" width="600">
 
 Real-World Results
 ---
-- Camera Setting
+* Camera Setting
 <img src="img/camera_setting.jpg" width="600">
-- Real World Results
+* Real World Results
 <img src="img/qualitative_realworld.png" width="600">
 
 Citation

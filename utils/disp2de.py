@@ -16,7 +16,7 @@ args = parser.parse_args()
 path = args.path
 if path[-1]=='/':
     path = path[:-1]
-out_path = '%s_array_depth'%path
+out_path = '%s_depth'%path
 if not os.path.isdir(out_path):
     os.makedirs(out_path)   # build the dir for the disparity output
 

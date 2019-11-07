@@ -40,7 +40,7 @@ parser.add_argument('--checkpoint', default= None,
                     help='load checkpoint path')
 parser.add_argument('--save_checkpoint', default='./checkpoints',
                     help='save checkpoint path')
-parser.add_argument('--tensorboard_path', default='/mnt/work/3L_PSM/runs/ICRA/CleanCode/main',
+parser.add_argument('--tensorboard_path', default='/logs',
                     help='tensorboard path')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')

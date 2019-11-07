@@ -8,7 +8,7 @@ This is the implementation of our "360&deg; Stereo Depth Estimation with Learnab
 Overview 
 --- 
 <p align="center">
-<img src="img/architecture.jpg" width="600">
+<img src="img/architecture.jpg" width="800">
 </p>
 
 How to Use
@@ -79,13 +79,17 @@ How to Use
 >> python testing.py --datapath data/MP3D/test/ --loadmodel checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/MP3D
 
 # For SF3D Dataset
->> python testing.py --datapath data/MP3D/test/ --loadmodel checkpoints/SF3D_checkpoint/checkpoint.tar --outfile output/SF3D
+>> python testing.py --datapath data/SF3D/test/ --loadmodel checkpoints/SF3D_checkpoint/checkpoint.tar --outfile output/SF3D
 
 # For Real World Data
->> python testing.py --datapath data/MP3D/test/ --loadmodel checkpoints/Gray_Realworld_checkpoint/checkpoint.tar --gray --outfile output/Realworld
+>> python testing.py --datapath data/Realworld/test/ --loadmodel checkpoints/Gray_Realworld_checkpoint/checkpoint.tar --gray --outfile output/Realworld
 
 # For small inference
 >> python testing.py --datapath data/inference/ --loadmodel checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/small_inference
+```
+* Disparity to Depth:
+```
+>> python utils/disp2de.py --path PATH_TO_DISPARITY
 ```
 
 Notes

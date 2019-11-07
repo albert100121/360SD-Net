@@ -3,12 +3,12 @@
 
 This is the implementation of our "360&deg; Stereo Depth Estimation with Learnable Cost Volume" by [Ning-Hsu Wang](http://albert100121.github.io/)
 
-<p align="center"><img src="img/teaser.gif" width="400"></p>
+<p align="center"><img src="img/teaser.gif" width="600"></p>
 
 Overview 
 --- 
 <p align="center">
-<img src="img/architecture.jpg" width="450">
+<img src="img/architecture.jpg" width="600">
 </p>
 
 How to Use

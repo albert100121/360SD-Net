@@ -24,7 +24,7 @@ from torchvision import transforms
 from dataloader import testing_loader as DA
 
 parser = argparse.ArgumentParser(description='360SD-Net Testing')
-parser.add_argument('--datapath', default='/mnt/work/dataset/minos_ud_stereo/base_20cm/test/',
+parser.add_argument('--datapath', default='data/MP3D/test/',
                     help='select model')
 parser.add_argument('--checkpoint', default=None,
                     help='load checkpoint path')
@@ -34,11 +34,11 @@ parser.add_argument('--maxdisp', type=int, default=68,
                     help='maxium disparity')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
-parser.add_argument('--gray', action='store_true', default=False,
-                    help='enables gray scale image as input')
+parser.add_argument('--real', action='store_true', default=False,
+                    help='adapt to real world images as input')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--outfile', type=str, help='the output filename to put in output_npy for the output disparity')
+parser.add_argument('--outfile', type=str, help='the output path to put the output disparity')
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -50,7 +50,7 @@ if args.cuda:
 test_up_img, test_down_img = DA.dataloader(args.datapath)
 # Load model ----------------
 if args.model == '360SDNet':
-    print("Load model LCV_sub3")
+    print("Load model 360SD-Net")
     model = LCV_ours_sub3(args.maxdisp)
 else:
     print("Model not Implemented")
@@ -58,9 +58,9 @@ else:
 model = nn.DataParallel(model, device_ids=[0])
 model.cuda()
 #----------------------------
-# Gray Scale ----------------
-if args.gray:
-    print("Gray Scale Testing!!!")
+# Real World inference ------
+if args.real:
+    print("Real World Testing!!!")
 #----------------------------
 # Load checkpoint --------------------------------
 if args.checkpoint is not None:
@@ -89,7 +89,7 @@ def test(imgU,imgD):
         output = torch.squeeze(output)
         pred_disp = output.data.cpu().numpy()
 
-        return pred_disp, model.module.forF.forfilter1.weight
+        return pred_disp
 #--------------------------------------------------------------------------
 
 # Main Fuction ------------------------------------------------------------
@@ -101,7 +101,7 @@ def main():
  
     for inx in tqdm(range(len(test_up_img))):
         # read grey scale
-        if args.gray:
+        if args.real:
             imgU_o = np.tile(skimage.io.imread(test_up_img[inx], as_grey=True)[:,:,np.newaxis], (1,1,3)) *255
             imgD_o = np.tile(skimage.io.imread(test_down_img[inx], as_grey=True)[:,:,np.newaxis], (1,1,3)) *255
         else:
@@ -111,8 +111,8 @@ def main():
         # concatenate polar angle as equirectangular information -----
         imgU_o = np.concatenate([imgU_o, equi_info], 2)
         imgD_o = np.concatenate([imgD_o, equi_info], 2)
-        # Gray / RGB preprocessing ------------------------------------
-        if args.gray:
+        # Real World / Synthetic preprocessing ------------------------------------
+        if args.real:
             compose_trans = transforms.Compose([transforms.ToTensor()])
             imgU = compose_trans(imgU_o).numpy()
             imgD = compose_trans(imgD_o).numpy()
@@ -129,17 +129,18 @@ def main():
         imgD = np.lib.pad(imgD,((0,0),(0,0),(0,0),(LR_pad,LR_pad)),mode='wrap')
         # Testing and count time -------------------
         start_time = time.time()
-        pred_disp, filter_weight = test(imgU,imgD)
+        pred_disp = test(imgU,imgD)
         total_time += (time.time() - start_time)
         img = pred_disp[:,LR_pad:-LR_pad]
         # Save output ------------------------------ 
+        if args.outfile[-1] == '/':
+            args.outfile = args.outfile[:-1]
         os.system('mkdir -p %s'%args.outfile)
         np.save(args.outfile+'/'+test_up_img[inx].split('/')[-1][:-4]+'.npy', img)
         #-------------------------------------------
 
-    # Print Total Time and filter weight
+    # Print Total Time
     print("Total time: ",total_time, "Average time: ",total_time / len(test_up_img))
-    print("Filter weight: ", filter_weight)
 #-------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':

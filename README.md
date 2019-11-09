@@ -82,10 +82,10 @@ How to Use
 >> python testing.py --datapath data/SF3D/test/ --checkpoint checkpoints/SF3D_checkpoint/checkpoint.tar --outfile output/SF3D
 
 # For Real World Data
->> python testing.py --datapath data/realworld/ --checkpoint checkpoints/Gray_Realworld_checkpoint/checkpoint.tar --gray --outfile output/realworld
+>> python testing.py --datapath data/realworld/ --checkpoint checkpoints/Realworld_checkpoint/checkpoint.tar --real --outfile output/realworld
 
 # For small inference
->> python testing.py --datapath data/inference/ --checkpoint checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/small_inference
+>> python testing.py --datapath data/inference/MP3D/ --checkpoint checkpoints/MP3D_checkpoint/checkpoint.tar --outfile output/small_inference
 ```
 * Disparity to Depth:
 ```

@@ -24,9 +24,9 @@ parser.add_argument('--maxdisp', type=int ,default=68,
                     help='maxium disparity')
 parser.add_argument('--model', default='360SDNet',
                     help='select model')
-parser.add_argument('--datapath', default='/mnt/work/dataset/minos_ud_stereo/base_20cm/train/',
+parser.add_argument('--datapath', default='data/MP3D/train/',
                     help='datapath')
-parser.add_argument('--datapath_val', default='/mnt/work/dataset/minos_ud_stereo/base_20cm/val/',
+parser.add_argument('--datapath_val', default='data/MP3D/val/',
                     help='datapath for validation')
 parser.add_argument('--epochs', type=int, default=500,
                     help='number of epochs to train')
@@ -40,12 +40,12 @@ parser.add_argument('--checkpoint', default= None,
                     help='load checkpoint path')
 parser.add_argument('--save_checkpoint', default='./checkpoints',
                     help='save checkpoint path')
-parser.add_argument('--tensorboard_path', default='/logs',
+parser.add_argument('--tensorboard_path', default='./logs',
                     help='tensorboard path')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
-parser.add_argument('--gray', action='store_true', default=False,
-                    help='enables data to swap to grayscale version in both training and validation')
+parser.add_argument('--real', action='store_true', default=False,
+                    help='adapt to real world images in both training and validation')
 parser.add_argument('--SF3D', action='store_true', default=False,
                     help='read stanford3D data')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
@@ -57,19 +57,19 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 writer_path = args.tensorboard_path
 if args.SF3D:
     writer_path += '_SF3D'
-if args.gray:
-    writer_path +='_gray'
+if args.real:
+    writer_path +='_real'
 writer = SummaryWriter(writer_path)
 #-----------------------------------------
 
 # import dataloader ------------------------------
 from dataloader import filename_loader as lt       
-if args.gray:
+if args.real:
     from dataloader import grayscale_Loader as DA
-    print("Gray scale image loaded!!!")
+    print("Real World image loaded!!!")
 else:
     from dataloader import RGB_Loader as DA
-    print("RGB image loaded!!!")
+    print("Synthetic data image loaded!!!")
 #-------------------------------------------------
 
 # Random Seed -----------------------------
@@ -148,53 +148,53 @@ def unfreeze_layer(layer):
 
 # Train Function -------------------
 def train(imgU,imgD, disp):
-        model.train()
-        imgU   = Variable(torch.FloatTensor(imgU.float()))
-        imgD   = Variable(torch.FloatTensor(imgD.float()))   
-        disp = Variable(torch.FloatTensor(disp.float()))
-        # cuda?
-        if args.cuda:
-            imgU, imgD, disp_true = imgU.cuda(), imgD.cuda(), disp.cuda()
+    model.train()
+    imgU   = Variable(torch.FloatTensor(imgU.float()))
+    imgD   = Variable(torch.FloatTensor(imgD.float()))   
+    disp = Variable(torch.FloatTensor(disp.float()))
+    # cuda?
+    if args.cuda:
+        imgU, imgD, disp_true = imgU.cuda(), imgD.cuda(), disp.cuda()
 
-        # mask value
-        mask = (disp_true < args.maxdisp) & (disp_true > 0)
-        mask.detach_()
+    # mask value
+    mask = (disp_true < args.maxdisp) & (disp_true > 0)
+    mask.detach_()
 
-        optimizer.zero_grad()
-        # Loss -------------------------------------------- 
-        output1, output2, output3 = model(imgU,imgD)
-        output1 = torch.squeeze(output1,1)
-        output2 = torch.squeeze(output2,1)
-        output3 = torch.squeeze(output3,1)
-        loss = 0.5*F.smooth_l1_loss(output1[mask], disp_true[mask], size_average=True) + 0.7*F.smooth_l1_loss(output2[mask], disp_true[mask], size_average=True) + F.smooth_l1_loss(output3[mask], disp_true[mask], size_average=True)
-        #--------------------------------------------------
+    optimizer.zero_grad()
+    # Loss -------------------------------------------- 
+    output1, output2, output3 = model(imgU,imgD)
+    output1 = torch.squeeze(output1,1)
+    output2 = torch.squeeze(output2,1)
+    output3 = torch.squeeze(output3,1)
+    loss = 0.5*F.smooth_l1_loss(output1[mask], disp_true[mask], size_average=True) + 0.7*F.smooth_l1_loss(output2[mask], disp_true[mask], size_average=True) + F.smooth_l1_loss(output3[mask], disp_true[mask], size_average=True)
+    #--------------------------------------------------
 
-        loss.backward()
-        optimizer.step()
+    loss.backward()
+    optimizer.step()
 
-        return loss.data[0]
+    return loss.data[0]
 
 # Valid Function -----------------------
 def val(imgU,imgD,disp_true):
-        model.eval()
-        imgU   = Variable(torch.FloatTensor(imgU.float()))
-        imgD   = Variable(torch.FloatTensor(imgD.float()))   
-        # cuda?
-        if args.cuda:
-            imgU, imgD = imgU.cuda(), imgD.cuda()
-        # mask value
-        mask = (disp_true < args.maxdisp) & (disp_true > 0)
+    model.eval()
+    imgU   = Variable(torch.FloatTensor(imgU.float()))
+    imgD   = Variable(torch.FloatTensor(imgD.float()))   
+    # cuda?
+    if args.cuda:
+        imgU, imgD = imgU.cuda(), imgD.cuda()
+    # mask value
+    mask = (disp_true < args.maxdisp) & (disp_true > 0)
 
-        with torch.no_grad():
-            output3 = model(imgU,imgD)
+    with torch.no_grad():
+        output3 = model(imgU,imgD)
 
-        output = torch.squeeze(output3.data.cpu(),1)
-        if len(disp_true[mask])==0:
-           loss = 0
-        else:
-           loss = torch.mean(torch.abs(output[mask]-disp_true[mask]))  # end-point-error
+    output = torch.squeeze(output3.data.cpu(),1)
+    if len(disp_true[mask])==0:
+        loss = 0
+    else:
+        loss = torch.mean(torch.abs(output[mask]-disp_true[mask]))  # end-point-error
 
-        return loss, output
+    return loss, output
 
 # Adjust Learning Rate
 def adjust_learning_rate(optimizer, epoch):
@@ -235,7 +235,7 @@ def main():
         total_train_loss = 0
         adjust_learning_rate(optimizer,epoch)
 
-	# unfreeze filter --------------
+	    # unfreeze filter --------------
         if epoch >= args.start_learn:
             unfreeze_layer(model.module.forF.forfilter1)
         #-------------------------------
@@ -272,7 +272,7 @@ def main():
             depth_gt = todepth( disp.data.cpu().numpy())[:,26:486,:]
             mask_de_gt = depth_gt >0
             val_crop_rmse = np.sqrt(np.mean(( todepth(val_output.data.cpu().numpy())[:,26:486,:][mask_de_gt] - depth_gt[mask_de_gt] )**2))
-	    #-------------------------------------------------------------
+	        #-------------------------------------------------------------
             # Loss ---------------------------------
             total_val_loss += val_loss
             total_val_crop_rmse += val_crop_rmse

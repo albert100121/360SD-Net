@@ -108,8 +108,8 @@ class LCV(nn.Module):
                                       nn.ReLU(inplace=True),
                                       nn.Conv3d(32, 1, kernel_size=3, padding=1, stride=1,bias=False))
 
-	# for loop of filter kernel
-	self.forF = forfilter(32)
+        # for loop of filter kernel
+        self.forF = forfilter(32)
 
 
 

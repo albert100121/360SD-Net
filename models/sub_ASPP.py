@@ -69,28 +69,28 @@ class feature_extraction(nn.Module):
         self.layer3 = self._make_layer(BasicBlock, 128, 3, 1,1,1)
         self.layer4 = self._make_layer(BasicBlock, 128, 3, 1,1,2)
 
-	# ASPP network
+        # ASPP network
 
-	self.aspp1 = nn.Sequential(convbn(160, 32, 1, 1, 0, 1),
-				   nn.ReLU(inplace=True))
-	self.aspp2 = nn.Sequential(convbn(160, 32, 3, 1, 1, 6),
-				   nn.ReLU(inplace=True))
-	self.aspp3 = nn.Sequential(convbn(160, 32, 3, 1, 1, 12),
-				   nn.ReLU(inplace=True))
-	self.aspp4 = nn.Sequential(convbn(160, 32, 3, 1, 1, 18),
-				   nn.ReLU(inplace=True))
-	self.aspp5 = nn.Sequential(convbn(160, 32, 3, 1, 1, 24),
-				   nn.ReLU(inplace=True))
+        self.aspp1 = nn.Sequential(convbn(160, 32, 1, 1, 0, 1),
+                    nn.ReLU(inplace=True))
+        self.aspp2 = nn.Sequential(convbn(160, 32, 3, 1, 1, 6),
+                    nn.ReLU(inplace=True))
+        self.aspp3 = nn.Sequential(convbn(160, 32, 3, 1, 1, 12),
+                    nn.ReLU(inplace=True))
+        self.aspp4 = nn.Sequential(convbn(160, 32, 3, 1, 1, 18),
+                    nn.ReLU(inplace=True))
+        self.aspp5 = nn.Sequential(convbn(160, 32, 3, 1, 1, 24),
+                    nn.ReLU(inplace=True))
         self.newlastconv = nn.Sequential(convbn(224, 128, 3, 1, 1, 1),
-                                         nn.ReLU(inplace=True),
-                                         nn.Conv2d(128, 32, kernel_size=1, padding=0, stride = 1, bias=False))
-	# Polar Branch
+                                        nn.ReLU(inplace=True),
+                                        nn.Conv2d(128, 32, kernel_size=1, padding=0, stride = 1, bias=False))
+        # Polar Branch
         self.firstcoord = nn.Sequential(convbn(1, 32, 3, 2, 1, 1),
-                                       nn.ReLU(inplace=True),
-                                       convbn(32, 32, 3, 2, 1, 1),
-                                       nn.ReLU(inplace=True),
-                                       convbn(32, 32, 3, 1, 1, 1),
-                                       nn.ReLU(inplace=True))
+                                        nn.ReLU(inplace=True),
+                                        convbn(32, 32, 3, 2, 1, 1),
+                                        nn.ReLU(inplace=True),
+                                        convbn(32, 32, 3, 1, 1, 1),
+                                        nn.ReLU(inplace=True))
 
     def _make_layer(self, block, planes, blocks, stride, pad, dilation):
         downsample = None
@@ -119,14 +119,14 @@ class feature_extraction(nn.Module):
         out_coord = self.firstcoord(x[:,3:,:,:])
         output_skip_c = torch.cat((output_skip, out_coord), 1)
 
-	# ASPP and new last conv
-	ASPP1 = self.aspp1(output_skip_c)
-	ASPP2 = self.aspp2(output_skip_c)
-	ASPP3 = self.aspp3(output_skip_c)
-	ASPP4 = self.aspp4(output_skip_c)
-	ASPP5 = self.aspp5(output_skip_c)
+        # ASPP and new last conv
+        ASPP1 = self.aspp1(output_skip_c)
+        ASPP2 = self.aspp2(output_skip_c)
+        ASPP3 = self.aspp3(output_skip_c)
+        ASPP4 = self.aspp4(output_skip_c)
+        ASPP5 = self.aspp5(output_skip_c)
         output_feature = torch.cat((output_raw, ASPP1,ASPP2,ASPP3,ASPP4,ASPP5), 1)
-	output_feature = self.newlastconv(output_feature)
+        output_feature = self.newlastconv(output_feature)
 	
         return output_feature
 

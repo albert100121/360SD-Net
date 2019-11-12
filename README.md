@@ -1,5 +1,5 @@
 # 360SD-Net
-[project page](https://albert100121.github.io/360SD-Net-Project-Page/) | [paper](https://arxiv.org/abs/xxxxx)
+[project page](https://albert100121.github.io/360SD-Net-Project-Page/) | [paper](https://arxiv.org/abs/1911.04460)
 
 This is the implementation of our "360&deg; Stereo Depth Estimation with Learnable Cost Volume" by [Ning-Hsu Wang](http://albert100121.github.io/)
 
@@ -114,9 +114,10 @@ Real-World Results
 Citation
 ---
 ```
-@article{360sdnet2019,
-title={360SD-Net: 360° Stereo Depth Estimation with Learnable Cost Volume},
-author={Wang, Ning-Hsu and Solarte, Bolivar and Tsai, Yi-Hsuan and Chiu, Wei-Chen and Sun, Min},
-journal={arXiv preprint arXiv:xxxx.xxxxx},
-year={2019}}
+@article{wang2019360sdnet,
+	title={360SD-Net: 360° Stereo Depth Estimation with Learnable Cost Volume},
+	author={Ning-Hsu Wang and Bolivar Solarte and Yi-Hsuan Tsai and Wei-Chen Chiu and Min Sun},
+	journal={arXiv preprint arXiv:1911.04460},
+	year={2019}
+}
 ```

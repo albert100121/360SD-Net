@@ -1,7 +1,7 @@
 # 360SD-Net
 [project page](https://albert100121.github.io/360SD-Net-Project-Page/) | [paper](https://arxiv.org/abs/1911.04460v2) | [dataset](https://forms.gle/GuxNQ6NLmi9yHc829)
 
-This is the implementation of our "360&deg; Stereo Depth Estimation with Learnable Cost Volume" by [Ning-Hsu Wang](http://albert100121.github.io/)
+This is the implementation of our [ICRA 2020](https://www.icra2020.org/) paper "360&deg; Stereo Depth Estimation with Learnable Cost Volume" by [Ning-Hsu Wang](http://albert100121.github.io/)
 
 <p align="center"><img src="img/teaser.gif" width="600"></p>
 

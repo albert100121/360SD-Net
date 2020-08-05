@@ -7,7 +7,7 @@ __imagenet_stats = {
 }
 
 
-def normalize(normalize=__imagenet_stats):
+def color_normalize(normalize=__imagenet_stats):
     t_list = [
         transforms.ToTensor(),
         transforms.Normalize(**normalize),
@@ -35,4 +35,4 @@ def get_transform(name='imagenet',
     if augment:
         return color_preproccess(normalize=normalize)
     else:
-        return normalize(normalize=normalize)
+        return color_normalize(normalize=normalize)
